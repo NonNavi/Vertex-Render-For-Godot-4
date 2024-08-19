@@ -1,0 +1,74 @@
+[gd_scene load_steps=8 format=3 uid="uid://bb5namfbhfyqy"]
+
+[ext_resource type="Shader" path="res://addons/VertexRenderer/shader/lit_basic.gdshader" id="1_83sm6"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_q8tl0"]
+sky_top_color = Color(0.189626, 0.314596, 0.55, 1)
+sky_horizon_color = Color(0.390488, 0.573593, 0.6708, 1)
+sky_curve = 0.579562
+ground_bottom_color = Color(0, 0, 0, 1)
+ground_horizon_color = Color(0.392157, 0.572549, 0.670588, 1)
+ground_curve = 0.393966
+
+[sub_resource type="Sky" id="Sky_mhyts"]
+sky_material = SubResource("ProceduralSkyMaterial_q8tl0")
+
+[sub_resource type="Environment" id="Environment_yqo1d"]
+background_mode = 1
+background_color = Color(0.472656, 0.472656, 0.472656, 1)
+sky = SubResource("Sky_mhyts")
+tonemap_mode = 3
+ssao_detail = 5.0
+ssao_light_affect = 1.0
+ssao_ao_channel_affect = 1.0
+ssil_radius = 2.0
+ssil_normal_rejection = 0.75
+sdfgi_use_occlusion = true
+glow_levels/1 = 1.0
+glow_levels/2 = 0.25
+glow_normalized = true
+glow_bloom = 0.75
+fog_mode = 1
+fog_density = 1.0
+fog_depth_curve = 2.73208
+volumetric_fog_density = 0.1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yybtb"]
+render_priority = 0
+shader = ExtResource("1_83sm6")
+shader_parameter/light_scale = 1.0
+shader_parameter/tint = Color(1, 1, 1, 1)
+shader_parameter/uv_scale = Vector2(1, 1)
+shader_parameter/uv_offset = Vector2(0, 0)
+shader_parameter/uv_scroll = Vector2(0, 0)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_k7hm4"]
+size = Vector2(10, 10)
+subdivide_width = 5
+subdivide_depth = 5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_db5sa"]
+render_priority = 0
+shader = ExtResource("1_83sm6")
+shader_parameter/light_scale = 1.0
+shader_parameter/tint = Color(1, 1, 1, 1)
+shader_parameter/uv_scale = Vector2(1, 1)
+shader_parameter/uv_offset = Vector2(0, 0)
+shader_parameter/uv_scroll = Vector2(0, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment"]
+environment = SubResource("Environment_yqo1d")
+
+[node name="CSGSphere3D" type="CSGSphere3D" parent="."]
+material = SubResource("ShaderMaterial_yybtb")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.986971, 0.160898, 0, -0.160898, 0.986971, 0, 0, 0)
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.481227, -1.17)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+mesh = SubResource("PlaneMesh_k7hm4")
+surface_material_override/0 = SubResource("ShaderMaterial_db5sa")
