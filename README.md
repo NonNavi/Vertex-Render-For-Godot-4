@@ -1,4 +1,4 @@
-# Vertex-Render
+# Vertex-Render for Godot 4
  Vertex rendering reimplemented for Godot 4
 
  ## How to use
