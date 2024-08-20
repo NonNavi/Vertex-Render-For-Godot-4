@@ -29,7 +29,7 @@ Most of the parameters of the light are taken into account, such as:
 DirctionalLights behave differently than OmniLights and Spotlights,
 only the following parameters are taken into account:
 - position
-- rotatio
+- rotation
 - color
 - energy
 - inderect energy
