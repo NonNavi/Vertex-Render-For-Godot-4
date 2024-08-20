@@ -6,6 +6,12 @@
  The plugin should automatically add the shader globals necessary for the shader include to work, as well as the Singleton.<br>
  When adding the plugin reload the scene, this will reload the Script used for gathering the lighting information.
 
+### Changing scenes
+
+Since there's no scene_changed signal built-in, the Singleton doesnt have a way to know when a scene has changed and *if* it should re-scan the scene nodes for Light3D type nodes,
+so you have to let ***VertexRenderer*** know when to scan for nodes to add to the *Ligth* group, this is only necessary if you dont manually add the Light nodes to the "Light" group,
+use *update_nodes_group* to re-scan the scene nodes, take into account that this will have a performance hit the larger the amount of nodes in the scene.
+
 ### SpotLights & OmniLights
 
 Most of the parameters of the light are taken into account, such as:
@@ -37,6 +43,9 @@ If you feel like the Sky light is too dim, I recommend changing *Color* in *Ambi
 
 
  ## Known Issues
+ - ### All lights are missin at runtime
+ Lights should be part of the "Light" group, otherwise they wont be taken into account, *vertex_renderer.gd* should intercept new nodes and add them to the Light group, when the 
+ 
  - ### New lights are not updating
 
  The shader include has a **MAX_LIGHT** constant, this can be changed if necessary
@@ -49,4 +58,6 @@ Make sure the origins of the objects are correct and are close to the mesh, this
 
 ## Recommendations for your Project
 
-If you're not planning in using effects like SSAO or SSIL, I suggest adding **render_mode unshaded**, this however will make Ambient light behave differently.
+- If you're not planning in using effects like SSAO or SSIL, I suggest adding **render_mode unshaded**, this however will make Ambient light behave differently.
+- I recommend adding the Light's to the Light group manually, make it so is a Global Group and adding the nodes to the group is easier.
+
