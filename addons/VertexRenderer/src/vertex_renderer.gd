@@ -1,6 +1,7 @@
 @tool
 extends Node
 
+# Values here should align to the valus at ["res://addons/VertexRenderer/shader/vertex_shader.gdshaderinc"]
 enum LIGHT_TYPE{
 	OMNI = 1,
 	SPOT = 2,
@@ -25,11 +26,11 @@ var real_time : bool = true
 ##Skips [method _add_nodes_to_group], if this is enabled the user will need to manually put the lights in the Light group.
 var skip_ready : bool = false
 
-signal gather_lights_finished
-signal environment_updated
-signal create_image_array_finished
-signal create_layered_texture_finished
-signal pass_to_rendering_server_finished
+signal gather_lights_finished ## Emitted when [method _gather_lights] finishes
+signal environment_updated ## Emitted when [method update_environment] finishes
+signal create_image_array_finished ## Emitted when [method _create_image_array] finishes
+signal create_layered_texture_finished ## Emitted when [method _create_layered_texture_finished] finishes
+signal pass_to_rendering_server_finished ## Emitted when [method update_shader] finishes
 
 func _process(_delta):
 	if Engine.is_editor_hint() or real_time:
@@ -39,11 +40,13 @@ func _ready():
 	process_thread_group = ProcessThreadGroup.PROCESS_THREAD_GROUP_SUB_THREAD
 	
 	get_tree().node_added.connect(_on_node_added)
+	
 	if skip_ready:
-		_add_nodes_to_group()
+		update_nodes_group()
 	update_shader()
 
-func _add_nodes_to_group():
+##Scans for nodes of type [Light3D] and adds them to the [param Light] group
+func update_nodes_group():
 	var nodes = get_children(true)
 	for node in nodes:
 		if node is Light3D:
@@ -53,6 +56,7 @@ func _on_node_added(node : Node):
 		return
 	node.add_to_group("Light")
 
+##Updates the shader globals values for the shader
 func update_shader():
 	if Engine.is_editor_hint():
 		update_environment(get_tree().edited_scene_root)
@@ -76,6 +80,7 @@ func update_shader():
 		RenderingServer.global_shader_parameter_set("scene_lightmap_count",imageArray.size() - 1)
 		pass_to_rendering_server_finished.emit()
 
+##Gathers the scence [Environment] and defines ambient light related globals. 
 func update_environment(node : Node):
 	var environment : Environment
 	
