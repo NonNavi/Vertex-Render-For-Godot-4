@@ -8,7 +8,7 @@
 
 ### Changing scenes
 
-Since there's no scene_changed signal built-in, the Singleton doesnt have a way to know when a scene has changed and *if* it should re-scan the scene nodes for Light3D type nodes,
+Since there's no *scene_changed* signal built-in, the Singleton doesnt have a way to know when a scene has changed and *if* it should re-scan the scene nodes for Light3D type nodes,
 so you have to let ***VertexRenderer*** know when to scan for nodes to add to the *Ligth* group, this is only necessary if you dont manually add the Light nodes to the "Light" group,
 use *update_nodes_group* to re-scan the scene nodes, take into account that this will have a performance hit the larger the amount of nodes in the scene.
 
@@ -32,7 +32,7 @@ only the following parameters are taken into account:
 - rotation
 - color
 - energy
-- inderect energy
+- inderect energy<br>
 this last one is used like angular distance, diffusing the light and making the light expand more.
 
 ### Ambient light
@@ -43,7 +43,7 @@ If you feel like the Sky light is too dim, I recommend changing *Color* in *Ambi
 
 
  ## Known Issues
- - ### All lights are missin at runtime
+ - ### All lights are missing at runtime
  Lights should be part of the "Light" group, otherwise they wont be taken into account, *vertex_renderer.gd* should intercept new nodes and add them to the Light group, when the 
  
  - ### New lights are not updating
