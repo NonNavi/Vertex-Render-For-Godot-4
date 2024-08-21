@@ -134,7 +134,8 @@ void fragment(){
 ```
 instead, this will add *final_brightness* and *final_color* to be used.
 #### IMPORTANT
-The vertex include uses the ****render_mode world_vertex_coords****
+The vertex include uses the ****render_mode world_vertex_coords****, *#define USE_LOCAL_COORDS* will remove ****render_mode world_vertex_coords****, however this will break the way lights are calculated
+we recommend transforming VERTEX to world space.
 
  ## Known Issues
  - ### Everything is black/unshaded at runtime
