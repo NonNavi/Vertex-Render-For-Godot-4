@@ -3,12 +3,11 @@
 
  ## How to use
  Extract the *addons* folder and add it to your project, once the files are added, go to *ProjectSettings > Plugins* and enable *VertexRenderer*, once this is done reload your project.
-
- Inside "res://addons/VertexRenderer/shader/" you'll find *vertex_shader.gdshaderinc* alongside sample shaders to get you an idea in how to implement your own shaders, you can also check out
- *vertex_shader.gdshaderinc* to see the what definitions might suit your needs.
-
  The plugin should automatically add the shader globals necessary for the shader include to work, as well as the Singleton.<br>
  When adding the plugin reload the scene, this will reload the Script used for gathering the lighting information.
+ 
+ Inside ***"res://addons/VertexRenderer/shader/"*** you'll find **vertex_shader.gdshaderinc** alongside sample shaders to get you an idea in how to implement your own shaders, you can also check out
+ **vertex_shader.gdshaderinc** to see the what definitions might suit your needs, check the [Custom Code](https://github.com/NonNavi/Vertex-Render-For-Godot-4/edit/main/README.md#custom-code) section for more info on that.
 
 ### Changing scenes
 
@@ -45,7 +44,9 @@ as long as you dont add **render_mode unshaded**, to your shader using the shade
 if you are using the *Sky mode* for the *Environment* background, ambient color and energy is changed from the *Background* tab to the *Ambient Light* tab.
 If you feel like the Sky light is too dim, I recommend changing *Color* in *Ambient light* (ambient_light_color) to a neutral grey.
 
-### Custom Vertex Code.
+### Custom Code.
+- ### Basic needs
+- ### Vertex Code
 *vertex_shader.gdshaderinc* uses the vertex pass function for all the shading, so custom code is impossible without a special definition, ***#define CUSTOM_CODE*** will tell the shader include
 to change the way it works, this can be forced if your prefer it but changes to your shader code need to be made for the Vertex Renderer to work.
 ```GLSL
