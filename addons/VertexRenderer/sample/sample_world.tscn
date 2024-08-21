@@ -1,6 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://bb5namfbhfyqy"]
+[gd_scene load_steps=21 format=3 uid="uid://bb5namfbhfyqy"]
 
 [ext_resource type="Shader" path="res://addons/VertexRenderer/shader/lit_basic.gdshader" id="1_83sm6"]
+[ext_resource type="Shader" path="res://addons/VertexRenderer/shader/lit_vertex.gdshader" id="1_kel56"]
+[ext_resource type="Shader" path="res://addons/VertexRenderer/shader/unlit_reflect_sample.gdshader" id="3_svr30"]
+[ext_resource type="Shader" path="res://addons/VertexRenderer/shader/lit_reflection.gdshader" id="4_fh5ml"]
+[ext_resource type="Shader" path="res://addons/VertexRenderer/shader/unlit_basic.gdshader" id="5_uhxxv"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_q8tl0"]
 sky_top_color = Color(0.189626, 0.314596, 0.55, 1)
@@ -33,19 +37,31 @@ fog_density = 1.0
 fog_depth_curve = 2.73208
 volumetric_fog_density = 0.1
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_yybtb"]
+[sub_resource type="PlaneMesh" id="PlaneMesh_k7hm4"]
+size = Vector2(10, 10)
+subdivide_width = 10
+subdivide_depth = 10
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_iyvg3"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_swmt4"]
+width = 128
+height = 128
+noise = SubResource("FastNoiseLite_iyvg3")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1sd8k"]
 render_priority = 0
-shader = ExtResource("1_83sm6")
+shader = ExtResource("1_kel56")
 shader_parameter/light_scale = 1.0
 shader_parameter/tint = Color(1, 1, 1, 1)
 shader_parameter/uv_scale = Vector2(1, 1)
 shader_parameter/uv_offset = Vector2(0, 0)
 shader_parameter/uv_scroll = Vector2(0, 0)
+shader_parameter/noise_sample = SubResource("NoiseTexture2D_swmt4")
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_k7hm4"]
-size = Vector2(10, 10)
-subdivide_width = 5
-subdivide_depth = 5
+[sub_resource type="SphereMesh" id="SphereMesh_hrabm"]
+radial_segments = 8
+rings = 4
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_db5sa"]
 render_priority = 0
@@ -56,19 +72,85 @@ shader_parameter/uv_scale = Vector2(1, 1)
 shader_parameter/uv_offset = Vector2(0, 0)
 shader_parameter/uv_scroll = Vector2(0, 0)
 
+[sub_resource type="SphereMesh" id="SphereMesh_far7t"]
+radial_segments = 8
+rings = 4
+
+[sub_resource type="Gradient" id="Gradient_7vg72"]
+interpolation_mode = 2
+offsets = PackedFloat32Array(0, 0.379679, 0.44385, 0.561497, 1)
+colors = PackedColorArray(0.830868, 0.859031, 0.886719, 1, 0.742188, 0.481435, 0.238699, 1, 0.125, 0.0402932, 0, 1, 0, 0.60295, 0.941406, 1, 0.083377, 0, 0.261719, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_4msvt"]
+gradient = SubResource("Gradient_7vg72")
+fill_from = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wfhvq"]
+render_priority = 0
+shader = ExtResource("3_svr30")
+shader_parameter/light_scale = 1.0
+shader_parameter/tint = Color(1, 1, 1, 1)
+shader_parameter/uv_reflector_offset = Vector2(0, 0)
+shader_parameter/uv_reflector_scale = Vector2(1, 1)
+shader_parameter/reflector_sample = SubResource("GradientTexture2D_4msvt")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rwv23"]
+render_priority = 0
+shader = ExtResource("4_fh5ml")
+shader_parameter/light_scale = 1.0
+shader_parameter/tint = Color(1, 1, 1, 1)
+shader_parameter/roughness = 0.0
+shader_parameter/specular = 0.0
+shader_parameter/metallic = 1.0
+shader_parameter/uv_scale = Vector2(1, 1)
+shader_parameter/uv_offset = Vector2(0, 0)
+shader_parameter/uv_scroll = Vector2(0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sd3f6"]
+render_priority = 0
+shader = ExtResource("5_uhxxv")
+shader_parameter/light_scale = 1.0
+shader_parameter/tint = Color(1, 1, 1, 1)
+shader_parameter/uv_scale = Vector2(1, 1)
+shader_parameter/uv_offset = Vector2(0, 0)
+shader_parameter/uv_scroll = Vector2(0, 0)
+
 [node name="WorldEnvironment" type="WorldEnvironment"]
 environment = SubResource("Environment_yqo1d")
 
-[node name="CSGSphere3D" type="CSGSphere3D" parent="."]
-material = SubResource("ShaderMaterial_yybtb")
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+mesh = SubResource("PlaneMesh_k7hm4")
+surface_material_override/0 = SubResource("ShaderMaterial_1sd8k")
+
+[node name="Ball1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.661178, 0)
+mesh = SubResource("SphereMesh_hrabm")
+surface_material_override/0 = SubResource("ShaderMaterial_db5sa")
+
+[node name="Ball4" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.661178, 2)
+mesh = SubResource("SphereMesh_far7t")
+surface_material_override/0 = SubResource("ShaderMaterial_wfhvq")
+
+[node name="Ball2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.661178, 0)
+mesh = SubResource("SphereMesh_hrabm")
+surface_material_override/0 = SubResource("ShaderMaterial_rwv23")
+
+[node name="Ball3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.661178, -2)
+mesh = SubResource("SphereMesh_hrabm")
+surface_material_override/0 = SubResource("ShaderMaterial_sd3f6")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+omni_attenuation = 0.42
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.986971, 0.160898, 0, -0.160898, 0.986971, 0, 0, 0)
 
-[node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.481227, -1.17)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
-mesh = SubResource("PlaneMesh_k7hm4")
-surface_material_override/0 = SubResource("ShaderMaterial_db5sa")
+[node name="ReflectionProbe" type="ReflectionProbe" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+max_distance = 12.0
+size = Vector3(10, 5, 10)

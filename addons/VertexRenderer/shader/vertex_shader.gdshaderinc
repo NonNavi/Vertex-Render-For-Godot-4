@@ -34,6 +34,13 @@ struct Light{
 	mediump float range;
 	lowp int type;
 };
+#ifdef CUSTOM_VERTEX
+struct ShaderResult{
+	lowp vec3 result;
+	lowp float brightness;
+	lowp vec3 color;
+};
+#endif
 
 float calculate_brightness(Light light,vec3 normal,vec3 vertex){
 	float distance_from_vertex = 1.0 - min(distance(light.position,vertex) / light.range,1.0); // simple linear falloff
@@ -87,7 +94,50 @@ Light create_light(int idx){
 	light.attenuation = max(texture(scene_lightmap,vec3(vec2(1.0,1.0),idxTextArr)).b,0.0);
 	return light;
 }
+#ifdef CUSTOM_VERTEX
+ShaderResult vertex_shade(vec3 vertex,vec3 normal){
+	ShaderResult result;
+	// Direct light
+	
+	
+	result.brightness = 0.0;
+	result.color = vec3(0.0);
+	Light light;
+	//Main light cycle
+	for(int i = 0;i < MAX_LIGHTS;i++){
+		if(i > scene_lightmap_count){
+			break;
+		}
+		light = create_light(i * scene_lightmap_count);
+		float current_brightness = 0.0;
+		switch(light.type){
+			case TYPE_OMNILIGHT:
+				current_brightness = calculate_brightness(light,normal,vertex);
+				break;
+			case TYPE_DIRECT:
+				current_brightness = calculate_brightness_direct(light,normal);
+				break;
+			case TYPE_SPOTLIGHT:
+				current_brightness = calculate_brightness_spotlight(light,normal,vertex);
+				break;
+			default:
+				current_brightness = calculate_brightness(light,normal,vertex);
+				break;
+		}
+		current_brightness *= light.strength;
+		result.brightness = result.brightness + current_brightness;
+		result.color = result.color + (light.color * current_brightness);
+	}
+	result.color = clamp(result.color,vec3(0.0),vec3(1.0));
+	result.color += ambient_light_color * minimum_light;
+	result.brightness = clamp(result.brightness,minimum_light,256.0);
+	
+	result.result = clamp((result.color * result.brightness) * light_scale,vec3(0.0),vec3(256.0));
+	return result;
+}
+#endif
 
+#ifndef CUSTOM_VERTEX
 void vertex() {
 	vertex_color = COLOR;
 	// Direct light
@@ -132,3 +182,4 @@ void vertex() {
 	#endif
 	COLOR.rgb = clamp((v_color * v_brightness) * light_scale,vec3(0.0),vec3(256.0));
 }
+#endif
