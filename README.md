@@ -7,7 +7,7 @@
  When adding the plugin reload the scene, this will reload the Script used for gathering the lighting information.
  
  Inside ***"res://addons/VertexRenderer/shader/"*** you'll find **vertex_shader.gdshaderinc** alongside sample shaders to get you an idea in how to implement your own shaders, you can also check out
- **vertex_shader.gdshaderinc** to see the what definitions might suit your needs, check the [Custom Code](https://github.com/NonNavi/Vertex-Render-For-Godot-4/edit/main/README.md#custom-code) section for more info on that.
+ **vertex_shader.gdshaderinc** to see the what definitions might suit your needs, check the [Custom Code](https://github.com/NonNavi/Vertex-Render-For-Godot-4?tab=readme-ov-file#custom-code) section for more info on that.
 
 ### Changing scenes
 
