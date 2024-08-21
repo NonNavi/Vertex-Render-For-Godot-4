@@ -48,7 +48,7 @@ If you feel like the Sky light is too dim, I recommend changing *Color* in *Ambi
 ## Custom Code.
 - ### Basic Code
 Before we can start to make our own shaders we need to cover the basics of the shader, sample shaders are provided, 
-this will serve more as documentation and somewhere to come back to to know how to make the shader work.
+this will serve more as documentation and somewhere to come back to know how to make the shader work.
 ```GLSL
 shader_type spatial;
 //Without this the renderer wont work.
