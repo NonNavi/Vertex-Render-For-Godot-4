@@ -45,6 +45,48 @@ as long as you dont add **render_mode unshaded**, to your shader using the shade
 if you are using the *Sky mode* for the *Environment* background, ambient color and energy is changed from the *Background* tab to the *Ambient Light* tab.
 If you feel like the Sky light is too dim, I recommend changing *Color* in *Ambient light* (ambient_light_color) to a neutral grey.
 
+### Custom Vertex Code.
+*vertex_shader.gdshaderinc* uses the vertex pass function for all the shading, so custom code is impossible without a special definition, ***#define CUSTOM_CODE*** will tell the shader include
+to change the way it works, this can be forced if your prefer it but changes to your shader code need to be made for the Vertex Renderer to work.
+```GLSL
+shader_type spatial;
+
+// We define CUSTOM_VERTEX to let the include know we want to use custom vertex code
+#define CUSTOM_VERTEX
+#include "addons/VertexRenderer/shader/vertex_shader.gdshaderinc"
+
+void vertex(){
+ ShaderResult shader; // Struct to store the result of vertex_shade
+
+ // vertex_shade, this function does the same as the regular vertex function,
+ // however it will return a ShaderResult struct.
+
+ shader = vertex_shade(VERTEX,NORMAL);
+
+	vertex_color = COLOR;
+	COLOR.rgb = shader.result;
+   }
+```
+This are the *BASICS* for your code to have the result of the Shader, the important part is the *ShaderResult* struct and the *vertex_shade* function, the *ShaderResult* is a struct
+so it stores more data than the result of the shading process.
+```GLSL
+struct ShaderResult{
+	lowp vec3 result; // Final result of the Shader
+	lowp float brightness; // Final brightness of the Shader
+	lowp vec3 color; // Final color of the Shader
+};
+```
+ShaderResult stores 3 values, in case you need the Brightness or Color for your code, but you dont want to override the Vertex function you can use:
+```GLSL
+#define RETRIEVE_BRIGHTNESS
+#define RETRIEVE_COLOR
+
+void fragment(){
+  final_brightness; // Float, Final brightness from the shading process
+  final_color; // Vec3, Final color from the shading process
+}
+```
+instead, this will add *final_brightness* and *final_color* to be used.
 
  ## Known Issues
  - ### Everything is black/unshaded at runtime
