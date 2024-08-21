@@ -1,14 +1,18 @@
-# Vertex-Render
+# Vertex-Render for Godot 4
  Vertex rendering reimplemented for Godot 4
 
  ## How to use
+ Extract the *addons* folder and add it to your project, once the files are added, go to *ProjectSettings > Plugins* and enable *VertexRenderer*, once this is done reload your project.
+
+ Inside "res://addons/VertexRenderer/shader/" you'll find *vertex_shader.gdshaderinc* alongside sample shaders to get you an idea in how to implement your own shaders, you can also check out
+ *vertex_shader.gdshaderinc* to see the what definitions might suit your needs.
 
  The plugin should automatically add the shader globals necessary for the shader include to work, as well as the Singleton.<br>
  When adding the plugin reload the scene, this will reload the Script used for gathering the lighting information.
 
 ### Changing scenes
 
-Since there's no scene_changed signal built-in, the Singleton doesnt have a way to know when a scene has changed and *if* it should re-scan the scene nodes for Light3D type nodes,
+Since there's no *scene_changed* signal built-in, the Singleton doesnt have a way to know when a scene has changed and *if* it should re-scan the scene nodes for Light3D type nodes,
 so you have to let ***VertexRenderer*** know when to scan for nodes to add to the *Ligth* group, this is only necessary if you dont manually add the Light nodes to the "Light" group,
 use *update_nodes_group* to re-scan the scene nodes, take into account that this will have a performance hit the larger the amount of nodes in the scene.
 
@@ -32,7 +36,7 @@ only the following parameters are taken into account:
 - rotation
 - color
 - energy
-- inderect energy
+- inderect energy<br>
 this last one is used like angular distance, diffusing the light and making the light expand more.
 
 ### Ambient light
@@ -43,7 +47,10 @@ If you feel like the Sky light is too dim, I recommend changing *Color* in *Ambi
 
 
  ## Known Issues
- - ### All lights are missin at runtime
+ - ### Everything is black/unshaded at runtime
+ Check your Debugger log, and check for any shader global related errors or warnings, if that is the case, reload your project.<br>
+ If your error is not related to missing shder globals, consider reporting it [here](https://github.com/NonNavi/Vertex-Render-For-Godot-4/issues).
+ - ### All lights are missing at runtime
  Lights should be part of the "Light" group, otherwise they wont be taken into account, *vertex_renderer.gd* should intercept new nodes and add them to the Light group, when the 
  
  - ### New lights are not updating
