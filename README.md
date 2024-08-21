@@ -5,9 +5,9 @@
  Extract the *addons* folder and add it to your project, once the files are added, go to *ProjectSettings > Plugins* and enable *VertexRenderer*, once this is done reload your project.
  The plugin should automatically add the shader globals necessary for the shader include to work, as well as the Singleton.<br>
  When adding the plugin reload the scene, this will reload the Script used for gathering the lighting information.
- 
- Inside ***"res://addons/VertexRenderer/shader/"*** you'll find **vertex_shader.gdshaderinc** alongside sample shaders to get you an idea in how to implement your own shaders, you can also check out
- **vertex_shader.gdshaderinc** to see the what definitions might suit your needs.<br> 
+
+ For the new rendering to work, all your materials would need to be ShaderMaterials, inside ***"res://addons/VertexRenderer/shader/"*** you'll find ***vertex_shader.gdshaderinc*** 
+ alongside sample shaders to get you an idea in how to implement your own shaders, you can also check out ***vertex_shader.gdshaderinc*** to see the what definitions might suit your needs.<br> 
  check the [Custom Code](https://github.com/NonNavi/Vertex-Render-For-Godot-4?tab=readme-ov-file#custom-code) section for more info on that.
 
 ### Changing scenes
