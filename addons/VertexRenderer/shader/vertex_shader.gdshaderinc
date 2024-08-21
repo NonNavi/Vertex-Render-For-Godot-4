@@ -1,4 +1,6 @@
+#ifndef USE_LOCAL_COORDS
 render_mode world_vertex_coords;
+#endif
 
 varying vec4 vertex_color;
 #ifdef RETRIEVE_BRIGHTNESS
