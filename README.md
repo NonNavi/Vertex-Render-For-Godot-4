@@ -7,7 +7,8 @@
  When adding the plugin reload the scene, this will reload the Script used for gathering the lighting information.
  
  Inside ***"res://addons/VertexRenderer/shader/"*** you'll find **vertex_shader.gdshaderinc** alongside sample shaders to get you an idea in how to implement your own shaders, you can also check out
- **vertex_shader.gdshaderinc** to see the what definitions might suit your needs, check the [Custom Code](https://github.com/NonNavi/Vertex-Render-For-Godot-4?tab=readme-ov-file#custom-code) section for more info on that.
+ **vertex_shader.gdshaderinc** to see the what definitions might suit your needs.<br> 
+ check the [Custom Code](https://github.com/NonNavi/Vertex-Render-For-Godot-4?tab=readme-ov-file#custom-code) section for more info on that.
 
 ### Changing scenes
 
@@ -140,7 +141,9 @@ The vertex include uses the ****render_mode world_vertex_coords****
  Check your Debugger log, and check for any shader global related errors or warnings, if that is the case, reload your project.<br>
  If your error is not related to missing shder globals, consider reporting it [here](https://github.com/NonNavi/Vertex-Render-For-Godot-4/issues).
  - ### All lights are missing at runtime
- Lights should be part of the "Light" group, otherwise they wont be taken into account, *vertex_renderer.gd* should intercept new nodes and add them to the Light group, when the 
+ Lights should be part of the "Light" group, otherwise they wont be taken into account, *vertex_renderer.gd* should intercept new nodes and add them to the Light group,
+ when the you run your project *vertex_renderer.gd* will scan for all nodes inside the scene and add them to the group, however this only happens when *update_nodes_group* is called
+ refer to [Changing Scenes](https://github.com/NonNavi/Vertex-Render-For-Godot-4?tab=readme-ov-file#changing-scenes) for more information on that.
  
  - ### New lights are not updating
 
