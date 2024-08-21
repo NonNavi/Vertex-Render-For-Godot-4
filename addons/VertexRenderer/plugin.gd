@@ -1,11 +1,12 @@
 @tool
 extends EditorPlugin
 
-const SOURCE_PATH := "res://addons/VertexRenderer/src/"
+const SOURCE_PATH := "res://addons/VertexRenderer/"
 
-const SINGLETON_PATH := SOURCE_PATH + "vertex_renderer.gd"
+const SCENE_LIGHTMAP_PLACEHOLDER := preload("res://addons/VertexRenderer/scene_lightmap_placeholder.res")
+const SINGLETON_PATH := SOURCE_PATH + "src/vertex_renderer.gd"
 const SHADER_GLOBALS := {
-	"scene_lightmap":[RenderingServer.GLOBAL_VAR_TYPE_SAMPLER2DARRAY,null],
+	"scene_lightmap":[RenderingServer.GLOBAL_VAR_TYPE_SAMPLER2DARRAY,SCENE_LIGHTMAP_PLACEHOLDER],
 	"scene_lightmap_count":[RenderingServer.GLOBAL_VAR_TYPE_INT,0],
 	"ambient_light_color":[RenderingServer.GLOBAL_VAR_TYPE_VEC3,Vector3.ZERO],
 	"minimum_light":[RenderingServer.GLOBAL_VAR_TYPE_FLOAT,0.0],
