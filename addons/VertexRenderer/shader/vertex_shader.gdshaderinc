@@ -22,7 +22,7 @@ global uniform float minimum_light;
 const int TYPE_OMNILIGHT = 1;
 const int TYPE_SPOTLIGHT = 2;
 const int TYPE_DIRECT = 3;
-const int TYPE_RECT = 4;
+const int TYPE_RECT = 4; // Unused
 
 struct Light{
 	lowp vec3 color;
