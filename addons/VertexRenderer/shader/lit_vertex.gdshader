@@ -13,9 +13,15 @@ uniform vec2 uv_scroll = vec2(0.0);
 
 uniform sampler2D noise_sample : hint_default_black,filter_linear;
 
+varying vec3 final_color;
+varying float final_brightness;
 void vertex(){
 	ShaderResult shade;
 	shade = vertex_shade(VERTEX,NORMAL);
+	
+	final_brightness = shade.brightness;
+	final_color = shade.color;
+	
 	vertex_color = COLOR;
 	
 	COLOR.rgb = shade.result;
@@ -38,6 +44,8 @@ void fragment(){
 	ALBEDO *= COLOR.rgb * vertex_color.rgb;
 }
 
+
 void light(){
-	DIFFUSE_LIGHT = vec3(0.0);
+	DIFFUSE_LIGHT = vec3(final_color) * final_brightness;
 }
+

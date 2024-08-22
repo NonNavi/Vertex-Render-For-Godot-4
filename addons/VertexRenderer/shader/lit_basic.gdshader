@@ -1,4 +1,7 @@
 shader_type spatial;
+
+#define RETRIEVE_BRIGHTNESS
+#define RETRIEVE_COLOR
 #include "vertex_shader.gdshaderinc"
 
 uniform sampler2D color_sample : source_color,filter_linear;
@@ -19,9 +22,9 @@ void fragment(){
 	}
 	
 	ALBEDO = texture(color_sample,uv).rgb * tint.rgb;
-	ALBEDO *= COLOR.rgb * vertex_color.rgb;
+	ALBEDO *= vertex_color.rgb;
 }
 
 void light(){
-	DIFFUSE_LIGHT = vec3(0.0);
+	DIFFUSE_LIGHT = vec3(final_color) * final_brightness;
 }

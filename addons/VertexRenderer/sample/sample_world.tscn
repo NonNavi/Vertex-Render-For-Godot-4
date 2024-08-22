@@ -19,7 +19,7 @@ sky_material = SubResource("ProceduralSkyMaterial_q8tl0")
 
 [sub_resource type="Environment" id="Environment_yqo1d"]
 background_mode = 1
-background_color = Color(0.5, 0.5, 0.5, 1)
+background_color = Color(0.6, 0.6, 0.6, 1)
 sky = SubResource("Sky_mhyts")
 tonemap_mode = 3
 ssao_detail = 5.0
@@ -72,6 +72,15 @@ shader_parameter/uv_scale = Vector2(1, 1)
 shader_parameter/uv_offset = Vector2(0, 0)
 shader_parameter/uv_scroll = Vector2(0, 0)
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sd3f6"]
+render_priority = 0
+shader = ExtResource("5_uhxxv")
+shader_parameter/light_scale = 1.0
+shader_parameter/tint = Color(1, 1, 1, 1)
+shader_parameter/uv_scale = Vector2(1, 1)
+shader_parameter/uv_offset = Vector2(0, 0)
+shader_parameter/uv_scroll = Vector2(0, 0)
+
 [sub_resource type="SphereMesh" id="SphereMesh_far7t"]
 radial_segments = 8
 rings = 4
@@ -106,15 +115,6 @@ shader_parameter/uv_scale = Vector2(1, 1)
 shader_parameter/uv_offset = Vector2(0, 0)
 shader_parameter/uv_scroll = Vector2(0, 0)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_sd3f6"]
-render_priority = 0
-shader = ExtResource("5_uhxxv")
-shader_parameter/light_scale = 1.0
-shader_parameter/tint = Color(1, 1, 1, 1)
-shader_parameter/uv_scale = Vector2(1, 1)
-shader_parameter/uv_offset = Vector2(0, 0)
-shader_parameter/uv_scroll = Vector2(0, 0)
-
 [node name="WorldEnvironment" type="WorldEnvironment"]
 environment = SubResource("Environment_yqo1d")
 
@@ -123,25 +123,25 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
 mesh = SubResource("PlaneMesh_k7hm4")
 surface_material_override/0 = SubResource("ShaderMaterial_1sd8k")
 
-[node name="Ball1" type="MeshInstance3D" parent="."]
+[node name="lit ball" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.661178, 0)
 mesh = SubResource("SphereMesh_hrabm")
 surface_material_override/0 = SubResource("ShaderMaterial_db5sa")
 
-[node name="Ball4" type="MeshInstance3D" parent="."]
+[node name="unlit ball" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.661178, -2)
+mesh = SubResource("SphereMesh_hrabm")
+surface_material_override/0 = SubResource("ShaderMaterial_sd3f6")
+
+[node name="projected ball" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.661178, 2)
 mesh = SubResource("SphereMesh_far7t")
 surface_material_override/0 = SubResource("ShaderMaterial_wfhvq")
 
-[node name="Ball2" type="MeshInstance3D" parent="."]
+[node name="reflective ball" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.661178, 0)
 mesh = SubResource("SphereMesh_hrabm")
 surface_material_override/0 = SubResource("ShaderMaterial_rwv23")
-
-[node name="Ball3" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.661178, -2)
-mesh = SubResource("SphereMesh_hrabm")
-surface_material_override/0 = SubResource("ShaderMaterial_sd3f6")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

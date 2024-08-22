@@ -99,6 +99,7 @@ func update_environment(node : Node):
 		if environment.background_mode == Environment.BG_SKY:
 			ambient_color = environment.ambient_light_color
 			minimum_light = environment.ambient_light_energy
+		minimum_light = ambient_color.v * minimum_light
 		
 		
 		RenderingServer.global_shader_parameter_set("ambient_light_color",Vector3(ambient_color.r,ambient_color.g,ambient_color.b))
@@ -174,6 +175,7 @@ func _create_image_array(packedLights : Array[PackedLight]) -> Array[Image]:
 # Creates a layered texture this texture is the texture uploaded to the scene_lightmap shader global
 func _create_layered_texture(imageArray : Array[Image]) -> ImageTextureLayered:
 	if imageArray.is_empty():
+		print(" IMAGE ARRAY IS EMPTY ")
 		return
 	
 	var texture = Texture2DArray.new()

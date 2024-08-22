@@ -177,10 +177,10 @@ void vertex() {
 	v_brightness = clamp(v_brightness,minimum_light,256.0);
 	
 	#ifdef RETRIEVE_BRIGHTNESS
-	final_brightness = v_brightness;
+	final_brightness = clamp(v_brightness * light_scale,0.0,1.0);
 	#endif
 	#ifdef RETRIEVE_COLOR
-	final_color = v_color;
+	final_color = clamp(v_color * light_scale,0.0,256.0);
 	#endif
 	COLOR.rgb = clamp((v_color * v_brightness) * light_scale,vec3(0.0),vec3(256.0));
 }

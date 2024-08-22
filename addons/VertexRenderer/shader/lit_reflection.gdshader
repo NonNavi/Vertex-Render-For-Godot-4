@@ -1,4 +1,7 @@
 shader_type spatial;
+
+#define RETRIEVE_BRIGHTNESS
+#define RETRIEVE_COLOR
 #include "vertex_shader.gdshaderinc"
 
 uniform sampler2D color_sample : source_color,filter_linear;
@@ -33,5 +36,5 @@ void fragment(){
 }
 
 void light(){
-	DIFFUSE_LIGHT = vec3(0.0);
+	DIFFUSE_LIGHT = vec3(final_color) * final_brightness;
 }
