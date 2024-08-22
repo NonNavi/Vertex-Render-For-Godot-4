@@ -5,9 +5,9 @@
  Extract the *addons* folder and add it to your project, once the files are added, go to *ProjectSettings > Plugins* and enable *VertexRenderer*, once this is done reload your project.
  The plugin should automatically add the shader globals necessary for the shader include to work, as well as the Singleton.<br>
  When adding the plugin reload the scene, this will reload the Script used for gathering the lighting information.
- 
- Inside ***"res://addons/VertexRenderer/shader/"*** you'll find **vertex_shader.gdshaderinc** alongside sample shaders to get you an idea in how to implement your own shaders, you can also check out
- **vertex_shader.gdshaderinc** to see the what definitions might suit your needs.<br> 
+
+ For the new rendering to work, all your materials would need to be ShaderMaterials, inside ***"res://addons/VertexRenderer/shader/"*** you'll find ***vertex_shader.gdshaderinc*** 
+ alongside sample shaders to get you an idea in how to implement your own shaders, you can also check out ***vertex_shader.gdshaderinc*** to see the what definitions might suit your needs.<br> 
  check the [Custom Code](https://github.com/NonNavi/Vertex-Render-For-Godot-4?tab=readme-ov-file#custom-code) section for more info on that.
 
 ### Changing scenes
@@ -47,31 +47,8 @@ If you feel like the Sky light is too dim, I recommend changing *Color* in *Ambi
 
 ## Custom Code.
 - ### Basic Code
-Before we can start to make our own shaders we need to cover the basics of the shader, sample shaders are provided, this serve more for documentation of how the shader works.
-```GLSL
-shader_type spatial;
-//Without this the renderer wont work.
-#include "addons/VertexRenderer/shader/vertex_shader.gdshaderinc"
-
-void fragment(){
-	// Your code here...
-	
-	// The result of the shading process is normally stored on the COLOR built-in,
-	// the original COLOR is stored in vertex_color.
-
-	// We need to multiply the Shader result to the ALBEDO to make the shading visible. 
-	ALBEDO *= COLOR.rgb;
-   }
-// We override the light function so no pixel shading is applied. 
-void light(){
-	DIFFUSE_LIGHT = vec3(0.0);
-	SPECULAR_LIGHT = vec3(0.0);
-}
-```
-We use this approach to be able to use postprocess effects like: SSAO, SSIL even SSGI.<br> 
-Thanks to this we can also use Reflection probes to alter the look and feel of our meshes,
-VoxelGI however is not recommended as it will overpower our shader and make everything look too bright or burnt, 
-This can be removed if you dont plan on using any of those effects, take note that the ambient light will drastically change.
+Before we can start to make our own shaders we need to cover the basics of the shader, sample shaders are provided, 
+this will serve more as documentation and somewhere to come back to know how to make the shader work.
 ```GLSL
 shader_type spatial;
 //We can add this before or after we include the vertex shader.
@@ -90,8 +67,26 @@ void fragment(){
 	ALBEDO *= COLOR.rgb;
    }
 ```
-Just by adding **render_mode unshaded** we're able to bypass the whole light situation.
+- ### Built-in Pixel Shading compatibility
+I recommend sticking to using unshaded shaders, as they're the most stable, however in case you need the shader to use more complicated graphical effects like, SSAO,
+SSIL, SDFGI, SSR, ReflectionProbes, Hemishperic Ambient Light and such, you'll need to change your code a bit to accomodate for that.
+```GLSL
+shader_type spatial;
 
+#define RETRIEVE_BRIGHTNESS // We need these to get the calculated color and brightness
+#define RETRIEVE_COLOR
+
+//Without this the renderer wont work.
+#include "addons/VertexRenderer/shader/vertex_shader.gdshaderinc"
+
+void fragment(){
+	// Your code here...
+   }
+// We override the light function to give it our own light information, this can caused blocky light sources if done incorrectly. 
+void light(){
+	DIFFUSE_LIGHT = final_color * final_brightness;
+}
+```
 - ### Vertex Code
 *vertex_shader.gdshaderinc* uses the vertex pass function for all the shading, so custom code is impossible without a special definition, ***#define CUSTOM_CODE*** will tell the shader include
 to change the way it works, this can be forced if your prefer it but changes to your shader code need to be made for the Vertex Renderer to work.
@@ -100,6 +95,8 @@ shader_type spatial;
 
 // We define CUSTOM_VERTEX to let the include know we want to use custom vertex code
 #define CUSTOM_VERTEX
+
+render_mode unshaded;
 #include "addons/VertexRenderer/shader/vertex_shader.gdshaderinc"
 
 void vertex(){
@@ -122,7 +119,7 @@ struct ShaderResult{
 	lowp vec3 color; // Final color of the Shader
 };
 ```
-ShaderResult stores 3 values, in case you need the Brightness or Color for your code, if you dont want to override the Vertex function for them you can use:
+ShaderResult stores 3 values, in case you need the Brightness or Color for your code, as we established on Built-in PixelShading compatibility, we can retrieve those 2 values with these.
 ```GLSL
 #define RETRIEVE_BRIGHTNESS
 #define RETRIEVE_COLOR
@@ -132,9 +129,9 @@ void fragment(){
 	final_color; // Vec3, Final color from the shading process
 }
 ```
-instead, this will add *final_brightness* and *final_color* to be used.
 #### IMPORTANT
-The vertex include uses the ****render_mode world_vertex_coords****
+The vertex include uses the ****render_mode world_vertex_coords****, *#define USE_LOCAL_COORDS* will remove ****render_mode world_vertex_coords****, however this will break the way lights are calculated
+we recommend transforming VERTEX to world space.
 
  ## Known Issues
  - ### Everything is black/unshaded at runtime
@@ -151,6 +148,11 @@ The vertex include uses the ****render_mode world_vertex_coords****
  - ### Negative attenuation makes everything else black
 
 This is an issue in the vertex_render.gd script, values are not capped, I recommend not going below zero for OmniLights
+ - ### Big pixels surrounding my light sources
+This issue is caused by the light function, since we're changing the way the light behaves without telling the engine, graphical errors like this are common, you can mitigate this by 
+checking the shader of the material that presents this error and revise the light function, 
+make sure it's behaviour lines up with what was discussed at [Custom Code](https://github.com/NonNavi/Vertex-Render-For-Godot-4?tab=readme-ov-file#custom-code)
+
  - ### Weird lighting on imported scene/model
 
 Make sure the origins of the objects are correct and are close to the mesh, this applies with rotation and scale as well.
