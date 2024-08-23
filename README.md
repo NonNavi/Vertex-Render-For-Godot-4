@@ -1,7 +1,11 @@
 # Vertex-Render for Godot 4
  Vertex rendering reimplemented for Godot 4
 
- ## How to use
+## DISCLAIMER
+ This addon is a work in progress and changes to the shader include may occur in the future, I recommend using shaders with the render flag "unshaded" as they're the most consistent, and
+ wont change much with future updates to the addon.
+
+## How to use
  Extract the *addons* folder and add it to your project, once the files are added, go to *ProjectSettings > Plugins* and enable *VertexRenderer*, once this is done reload your project.
  The plugin should automatically add the shader globals necessary for the shader include to work, as well as the Singleton.<br>
  When adding the plugin reload the scene, this will reload the Script used for gathering the lighting information.
@@ -60,11 +64,9 @@ render_mode unshaded;
 void fragment(){
 	// Your code here...
 	
-	// The result of the shading process is normally stored on the COLOR built-in,
-	// the original COLOR is stored in vertex_color.
-
+	// The result of the shading process is stored in shader_result
 	// We need to multiply the Shader result to the ALBEDO to make the shading visible. 
-	ALBEDO *= COLOR.rgb;
+	ALBEDO *= shader_result;
    }
 ```
 - ### Built-in Pixel Shading compatibility
@@ -72,9 +74,6 @@ I recommend sticking to using unshaded shaders, as they're the most stable, howe
 SSIL, SDFGI, SSR, ReflectionProbes, Hemishperic Ambient Light and such, you'll need to change your code a bit to accomodate for that.
 ```GLSL
 shader_type spatial;
-
-#define RETRIEVE_BRIGHTNESS // We need these to get the calculated color and brightness
-#define RETRIEVE_COLOR
 
 //Without this the renderer wont work.
 #include "addons/VertexRenderer/shader/vertex_shader.gdshaderinc"
@@ -84,7 +83,7 @@ void fragment(){
    }
 // We override the light function to give it our own light information, this can caused blocky light sources if done incorrectly. 
 void light(){
-	DIFFUSE_LIGHT = final_color * final_brightness;
+	DIFFUSE_LIGHT = shader_result;
 }
 ```
 - ### Vertex Code
@@ -104,11 +103,31 @@ void vertex(){
 	
  	// vertex_shade, this function does the same as the regular vertex function,
  	// however it will return a ShaderResult struct.
-	shader = vertex_shade(VERTEX,NORMAL);
+	shader = vertex_shade(VERTEX,NORMAL,MODEL_MATRIX);
 	
-	vertex_color = COLOR;
-	COLOR.rgb = shader.result;
+	shader_result= shader.result;
    }
+```
+We need to pass the MODEL_MATRIX so the Vertex position and Normal are translated from local space to world space, I'll explain how to make shaders that use the render flag *world_vertex_coords* next.
+```GLSL
+shader_type spatial;
+
+#define CUSTOM_VERTEX
+#define WORLD_SPACE_COORDINATES
+
+render_mode world_vertex_coords,unshaded;
+#include "vertex_shader.gdshaderinc"
+
+void vertex(){
+	ShaderResult shade;
+	// We still need to pass a value for the 3rd argumentm however it wont be used so you can pass any value here it wont matter.
+	shade = vertex_shade(VERTEX,NORMAL,MODEL_MATRIX);
+	shader_result = shade.result;
+
+	// for this example I made the shader round it's position to the nearest 4 decimal number, I need the *world_space_coords* render flag so it stay on the grid
+	// Round vertex position with 4 decimals
+	VERTEX = floor(VERTEX) + round(fract(VERTEX) * 4.0) * 0.25;
+}
 ```
 This are the *BASICS* for your code to have the result of the Shader, the important part is the *ShaderResult* struct and the *vertex_shade* function, the *ShaderResult* is a struct
 so it stores more data than the result of the shading process.
@@ -119,19 +138,7 @@ struct ShaderResult{
 	lowp vec3 color; // Final color of the Shader
 };
 ```
-ShaderResult stores 3 values, in case you need the Brightness or Color for your code, as we established on Built-in PixelShading compatibility, we can retrieve those 2 values with these.
-```GLSL
-#define RETRIEVE_BRIGHTNESS
-#define RETRIEVE_COLOR
-
-void fragment(){
-	final_brightness; // Float, Final brightness from the shading process
-	final_color; // Vec3, Final color from the shading process
-}
-```
-#### IMPORTANT
-The vertex include uses the ****render_mode world_vertex_coords****, *#define USE_LOCAL_COORDS* will remove ****render_mode world_vertex_coords****, however this will break the way lights are calculated
-we recommend transforming VERTEX to world space.
+ShaderResult stores 3 values, in case you need the Brightness or Color for your code, This values can be retrieved normally with "final_color" and "final_brightness".
 
  ## Known Issues
  - ### Everything is black/unshaded at runtime

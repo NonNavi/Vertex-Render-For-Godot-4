@@ -20,9 +20,5 @@ void fragment(){
 		discard;
 	}
 	ALBEDO = texture(color_sample,uv).rgb * tint.rgb;
-	ALBEDO *= COLOR.rgb * vertex_color.rgb;
-}
-
-void light(){
-	DIFFUSE_LIGHT = vec3(0.0);
+	ALBEDO *= COLOR.rgb * shader_result;
 }

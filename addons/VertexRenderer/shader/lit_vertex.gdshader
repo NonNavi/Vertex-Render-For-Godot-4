@@ -1,6 +1,9 @@
 shader_type spatial;
 
 #define CUSTOM_VERTEX
+#define WORLD_SPACE_COORDINATES
+
+render_mode world_vertex_coords;
 #include "vertex_shader.gdshaderinc"
 
 uniform sampler2D color_sample : source_color,filter_linear;
@@ -13,21 +16,19 @@ uniform vec2 uv_scroll = vec2(0.0);
 
 uniform sampler2D noise_sample : hint_default_black,filter_linear;
 
-varying vec3 final_color;
-varying float final_brightness;
 void vertex(){
 	ShaderResult shade;
-	shade = vertex_shade(VERTEX,NORMAL);
+	shade = vertex_shade(VERTEX,NORMAL,MODEL_MATRIX);
 	
 	final_brightness = shade.brightness;
 	final_color = shade.color;
 	
-	vertex_color = COLOR;
-	
-	COLOR.rgb = shade.result;
-	
+	shader_result = shade.result;
 	float offset = texture(noise_sample,UV).r;
 	VERTEX += NORMAL * offset;
+	
+	// Round vertex position with 4 decimals
+	VERTEX = floor(VERTEX) + round(fract(VERTEX) * 4.0) * 0.25;
 }
 
 void fragment(){
@@ -41,11 +42,11 @@ void fragment(){
 	}
 	
 	ALBEDO = texture(color_sample,uv).rgb * tint.rgb;
-	ALBEDO *= COLOR.rgb * vertex_color.rgb;
+	ALBEDO *= COLOR.rgb;
 }
 
 
 void light(){
-	DIFFUSE_LIGHT = vec3(final_color) * final_brightness;
+	DIFFUSE_LIGHT = shader_result;
 }
 

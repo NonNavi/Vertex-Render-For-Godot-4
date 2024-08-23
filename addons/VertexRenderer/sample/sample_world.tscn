@@ -19,7 +19,8 @@ sky_material = SubResource("ProceduralSkyMaterial_q8tl0")
 
 [sub_resource type="Environment" id="Environment_yqo1d"]
 background_mode = 1
-background_color = Color(0.6, 0.6, 0.6, 1)
+background_color = Color(0, 0.128657, 0.6, 1)
+background_energy_multiplier = 0.36
 sky = SubResource("Sky_mhyts")
 tonemap_mode = 3
 ssao_detail = 5.0
@@ -119,7 +120,7 @@ shader_parameter/uv_scroll = Vector2(0, 0)
 environment = SubResource("Environment_yqo1d")
 
 [node name="Floor" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.125, -1, 0)
 mesh = SubResource("PlaneMesh_k7hm4")
 surface_material_override/0 = SubResource("ShaderMaterial_1sd8k")
 
@@ -154,3 +155,4 @@ transform = Transform3D(1, 0, 0, 0, 0.986971, 0.160898, 0, -0.160898, 0.986971, 
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 max_distance = 12.0
 size = Vector3(10, 5, 10)
+enable_shadows = true

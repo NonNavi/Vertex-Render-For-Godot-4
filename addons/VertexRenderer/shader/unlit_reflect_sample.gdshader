@@ -10,6 +10,6 @@ uniform vec2 uv_reflector_scale = vec2(1.0);
 
 void fragment(){
 	vec2 proj_uv = vec2(NORMAL.x / 2.0 + 0.5, (-NORMAL.y) / 2.0 + 0.5) * uv_reflector_scale + uv_reflector_offset;
-	ALBEDO = texture(reflector_sample,proj_uv).rgb * vertex_color.rgb;
-	ALBEDO *= (COLOR.rgb);
+	ALBEDO = texture(reflector_sample,proj_uv).rgb * COLOR.rgb;
+	ALBEDO *= shader_result;
 }
