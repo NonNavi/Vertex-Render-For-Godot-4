@@ -108,8 +108,22 @@ void vertex(){
 	shader_result= shader.result;
    }
 ```
-We need to pass the MODEL_MATRIX so the Vertex position and Normal are translated from local space to world space, In the case that you need to make a shader that requires the render flag
-**world_vertex_coords** use the definition **WORLD_SPACE_COORDINATES** and add the render flag **world_vertex_coords**, no more custom code needed to make it work, this is an example of a shader that uses said definition.
+This are the *BASICS* for your code to have the result of the Shader, the important part is the *ShaderResult* struct and the *vertex_shade* function, the *ShaderResult* is a struct
+so it stores more data than the result of the shading process.
+```GLSL
+struct ShaderResult{
+	lowp vec3 result; // Final result of the Shader
+	lowp float brightness; // Final brightness of the Shader
+	lowp vec3 color; // Final color of the Shader
+};
+```
+ShaderResult stores 3 values, in case you need the Brightness or Color for your code, This values can be retrieved normally with "final_color" and "final_brightness".
+vertex_shade needs, VERTEX for position, NORMAL for orientation and MODEL_MATRIX for transformation, the shader is made to take into account local space vertex coordinates, and as such we need the
+MODEL_MATRIX to transform the local space postion and orientation to world space.
+
+## World Vertex Coords
+In the case that you need to make a shader that requires the render flag **world_vertex_coords** use the definition **WORLD_SPACE_COORDINATES** and add the render flag **world_vertex_coords**,
+no more custom code is needed on top of the basics already discussed, **WORLD_SPACE_COORDINATES** will tell the include to skip the transformation process entirely, this is an example of a shader that uses said definition.
 ```GLSL
 shader_type spatial;
 
@@ -126,21 +140,10 @@ void vertex(){
 	shade = vertex_shade(VERTEX,NORMAL,MODEL_MATRIX);
 	shader_result = shade.result;
 
-	// for this example I made the shader round it's position to the nearest 4 decimal number, I need the *world_space_coords* render flag so it stay on the grid
-	// Round vertex position with 4 decimals
-	VERTEX = floor(VERTEX) + round(fract(VERTEX) * 4.0) * 0.25;
+	// Your code...
 }
 ```
-This are the *BASICS* for your code to have the result of the Shader, the important part is the *ShaderResult* struct and the *vertex_shade* function, the *ShaderResult* is a struct
-so it stores more data than the result of the shading process.
-```GLSL
-struct ShaderResult{
-	lowp vec3 result; // Final result of the Shader
-	lowp float brightness; // Final brightness of the Shader
-	lowp vec3 color; // Final color of the Shader
-};
-```
-ShaderResult stores 3 values, in case you need the Brightness or Color for your code, This values can be retrieved normally with "final_color" and "final_brightness".
+If you need a more practical use of the world_vertex_coords render flag check the sample shader *lit_vertex.gdshader* inside the "shader" folder.
 
  ## Known Issues
  - ### Everything is black/unshaded at runtime
