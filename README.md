@@ -108,13 +108,15 @@ void vertex(){
 	shader_result= shader.result;
    }
 ```
-We need to pass the MODEL_MATRIX so the Vertex position and Normal are translated from local space to world space, I'll explain how to make shaders that use the render flag *world_vertex_coords* next.
+We need to pass the MODEL_MATRIX so the Vertex position and Normal are translated from local space to world space, In the case that you need to make a shader that requires the render flag
+**world_vertex_coords** use the definition **WORLD_SPACE_COORDINATES** and add the render flag **world_vertex_coords**, no more custom code needed to make it work, this is an example of a shader that uses said definition.
 ```GLSL
 shader_type spatial;
 
 #define CUSTOM_VERTEX
-#define WORLD_SPACE_COORDINATES
+#define WORLD_SPACE_COORDINATES // Changes how Light sources are calculated to ignore matrix transformations.
 
+// we need to add "world_vertex_coords" otherwise the lighting will mismatch.
 render_mode world_vertex_coords,unshaded;
 #include "vertex_shader.gdshaderinc"
 
@@ -144,28 +146,26 @@ ShaderResult stores 3 values, in case you need the Brightness or Color for your 
  - ### Everything is black/unshaded at runtime
  Check your Debugger log, and check for any shader global related errors or warnings, if that is the case, reload your project.<br>
  If your error is not related to missing shder globals, consider reporting it [here](https://github.com/NonNavi/Vertex-Render-For-Godot-4/issues).
+ - ### My scene looks too bright.
+ Keep in mind that if your scene has no light sources and you come from a scene that does, the lighting information will be carried over the new scene, in theory the singleton should
+ take care of updating the lightmap when a new scene loads ( note: this only happens automatically inside the editor, check [Changing Scene](https://github.com/NonNavi/Vertex-Render-For-Godot-4?tab=readme-ov-file#changing-scenes) ),
+ you can force the update by adding a Light3D node to the scene.
  - ### All lights are missing at runtime
  Lights should be part of the "Light" group, otherwise they wont be taken into account, *vertex_renderer.gd* should intercept new nodes and add them to the Light group,
  when the you run your project *vertex_renderer.gd* will scan for all nodes inside the scene and add them to the group, however this only happens when *update_nodes_group* is called
  refer to [Changing Scenes](https://github.com/NonNavi/Vertex-Render-For-Godot-4?tab=readme-ov-file#changing-scenes) for more information on that.
- 
  - ### New lights are not updating
-
  The shader include has a **MAX_LIGHT** constant, this can be changed if necessary
  - ### Negative attenuation makes everything else black
-
 This is an issue in the vertex_render.gd script, values are not capped, I recommend not going below zero for OmniLights
  - ### Big pixels surrounding my light sources
 This issue is caused by the light function, since we're changing the way the light behaves without telling the engine, graphical errors like this are common, you can mitigate this by 
-checking the shader of the material that presents this error and revise the light function, 
-make sure it's behaviour lines up with what was discussed at [Custom Code](https://github.com/NonNavi/Vertex-Render-For-Godot-4?tab=readme-ov-file#custom-code)
-
+checking the shader of the material that presents this error and revise the light function, this is very apparent with low poly models and big light sources with high attenuation values.
+Make sure it's behaviour lines up with what was discussed at [Custom Code](https://github.com/NonNavi/Vertex-Render-For-Godot-4?tab=readme-ov-file#custom-code)
  - ### Weird lighting on imported scene/model
-
 Make sure the origins of the objects are correct and are close to the mesh, this applies with rotation and scale as well.
 
 ## Recommendations for your Project
-
 - If you're not planning in using effects like SSAO or SSIL, I suggest adding **render_mode unshaded**, this however will make Ambient light behave differently.
 - I recommend adding the Light's to the Light group manually, make it so is a Global Group and adding the nodes to the group is easier.
 
