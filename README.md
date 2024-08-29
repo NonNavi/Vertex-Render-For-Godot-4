@@ -127,7 +127,7 @@ no more custom code is needed on top of the basics already discussed, **WORLD_SP
 ```GLSL
 shader_type spatial;
 
-#define CUSTOM_VERTEX
+#define CUSTOM_VERTEX // Not necessary, used here just for demostration.
 #define WORLD_SPACE_COORDINATES // Changes how Light sources are calculated to ignore matrix transformations.
 
 // we need to add "world_vertex_coords" otherwise the lighting will mismatch.
