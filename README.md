@@ -121,7 +121,7 @@ ShaderResult stores 3 values, in case you need the Brightness or Color for your 
 vertex_shade needs, VERTEX for position, NORMAL for orientation and MODEL_MATRIX for transformation, the shader is made to take into account local space vertex coordinates, and as such we need the
 MODEL_MATRIX to transform the local space postion and orientation to world space.
 
-#### World Vertex Coords
+- ### World Vertex Coords
 In the case that you need to make a shader that requires the render flag **world_vertex_coords** use the definition **WORLD_SPACE_COORDINATES** and add the render flag **world_vertex_coords**,
 no more custom code is needed on top of the basics already discussed, **WORLD_SPACE_COORDINATES** will tell the include to skip the transformation process entirely, this is an example of a shader that uses said definition.
 ```GLSL
