@@ -81,7 +81,8 @@ shader_type spatial;
 void fragment(){
 	// Your code here...
    }
-// We override the light function to give it our own light information, this can caused blocky light sources if done incorrectly. 
+// We override the light function to give it our own lighting information
+// this can caused blocky light sources if done incorrectly or if the light attenuation and range are too high. 
 void light(){
 	DIFFUSE_LIGHT = shader_result;
 }
