@@ -151,6 +151,8 @@ If you need a more practical use of the world_vertex_coords render flag check th
  Check your Debugger log, and check for any shader global related errors or warnings, if that is the case, reload your project.<br>
  If your error is not related to missing shder globals, consider reporting it [here](https://github.com/NonNavi/Vertex-Render-For-Godot-4/issues).
  - ### My scene looks too bright.
+ When you make a new scene the engine will create a DirectionalLight3D with it, you can get rid of this node by adding a DirectionalLight3D yourself and then removing it or simply hidding it.
+ 
  Keep in mind that if your scene has no light sources and you come from a scene that does, the lighting information will be carried over the new scene, in theory the singleton should
  take care of updating the lightmap when a new scene loads ( note: this only happens automatically inside the editor, check [Changing Scene](https://github.com/NonNavi/Vertex-Render-For-Godot-4?tab=readme-ov-file#changing-scenes) ),
  you can force the update by adding a Light3D node to the scene.
