@@ -38,19 +38,11 @@ func _process(_delta):
 	await pass_to_rendering_server_finished
 func _ready():
 	process_thread_group = ProcessThreadGroup.PROCESS_THREAD_GROUP_SUB_THREAD
-	
 	get_tree().node_added.connect(_on_node_added)
 	
-	if skip_ready:
-		update_nodes_group()
 	update_shader()
 
-##Scans for nodes of type [Light3D] and adds them to the [param Light] group
-func update_nodes_group():
-	var nodes = get_children(true)
-	for node in nodes:
-		if node is Light3D:
-			node.add_to_group("Light",true)
+# Intersepts incoming nodes and adds them to the Light group if they're of the Light3D node.
 func _on_node_added(node : Node):
 	if not(node is Light3D):
 		return
@@ -113,7 +105,7 @@ func _gather_lights() -> Array[PackedLight]:
 	for light in lights:
 		if (light is Light3D):
 			if light.visible:
-				var light_orientation = light.global_basis * Vector3.FORWARD
+				var light_orientation = (light.global_basis * Vector3.FORWARD).normalized()
 				var packedLight = PackedLight.new()
 				packedLight.position = light.global_position
 				packedLight.orientation = light_orientation

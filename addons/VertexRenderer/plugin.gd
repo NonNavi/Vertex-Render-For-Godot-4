@@ -14,9 +14,12 @@ const SHADER_GLOBALS := {
 
 func _enter_tree() -> void:
 	add_autoload_singleton("VertexRenderer",SINGLETON_PATH)
+	
 	var globals = RenderingServer.global_shader_parameter_get_list()
 	for key in SHADER_GLOBALS.keys():
 		if not(key in globals):
 			RenderingServer.global_shader_parameter_add(key,SHADER_GLOBALS[key][0],SHADER_GLOBALS[key][1])
+	ProjectSettings.save()
+
 func _exit_tree() -> void:
 	remove_autoload_singleton("VertexRenderer")

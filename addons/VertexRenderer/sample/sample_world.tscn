@@ -144,11 +144,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.661178, 0)
 mesh = SubResource("SphereMesh_hrabm")
 surface_material_override/0 = SubResource("ShaderMaterial_rwv23")
 
-[node name="OmniLight3D" type="OmniLight3D" parent="."]
+[node name="OmniLight3D" type="OmniLight3D" parent="." groups=["Light"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 omni_attenuation = 0.42
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." groups=["Light"]]
 transform = Transform3D(1, 0, 0, 0, 0.986971, 0.160898, 0, -0.160898, 0.986971, 0, 0, 0)
 
 [node name="ReflectionProbe" type="ReflectionProbe" parent="."]
