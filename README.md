@@ -7,19 +7,12 @@
 
 ## How to use
  Extract the *addons* folder and add it to your project, once the files are added, go to *ProjectSettings > Plugins* and enable *VertexRenderer*, once this is done reload your project.
- The plugin should automatically add the shader globals necessary for the shader include to work, as well as the Singleton.<br>
- When adding the plugin reload the scene, this will reload the Script used for gathering the lighting information.
+ The plugin should automatically add the shader globals necessary for the shader include to work, as well as the Singleton. The plugin should automatically add any Light3D type nodes into the Light group, even at runtime.
 
  For the new rendering to work, all your materials would need to be ShaderMaterials, inside ***"res://addons/VertexRenderer/shader/"*** you'll find ***vertex_shader.gdshaderinc*** 
  alongside sample shaders to get you an idea in how to implement your own shaders, you can also check out ***vertex_shader.gdshaderinc*** to see the what definitions might suit your needs.<br> 
  check the [Custom Code](https://github.com/NonNavi/Vertex-Render-For-Godot-4?tab=readme-ov-file#custom-code) section for more info on that.
-
-### Changing scenes
-
-Since there's no *scene_changed* signal built-in, the Singleton doesnt have a way to know when a scene has changed and *if* it should re-scan the scene nodes for Light3D type nodes,
-so you have to let ***VertexRenderer*** know when to scan for nodes to add to the *Ligth* group, this is only necessary if you dont manually add the Light nodes to the "Light" group,
-use *update_nodes_group* to re-scan the scene nodes, take into account that this will have a performance hit the larger the amount of nodes in the scene.
-
+ 
 ### SpotLights & OmniLights
 
 Most of the parameters of the light are taken into account, such as:
@@ -154,24 +147,26 @@ If you need a more practical use of the world_vertex_coords render flag check th
  When you make a new scene the engine will create a DirectionalLight3D with it, you can get rid of this node by adding a DirectionalLight3D yourself and then removing it or simply hidding it.
  
  Keep in mind that if your scene has no light sources and you come from a scene that does, the lighting information will be carried over the new scene, in theory the singleton should
- take care of updating the lightmap when a new scene loads ( note: this only happens automatically inside the editor, check [Changing Scene](https://github.com/NonNavi/Vertex-Render-For-Godot-4?tab=readme-ov-file#changing-scenes) ),
- you can force the update by adding a Light3D node to the scene.
+ take care of updating the lightmap when a new scene loads ( note: this only happens automatically if VertexRenderer.real_time is true), you can force the update by adding a Light3D node to the scene.
+ 
  - ### All lights are missing at runtime
- Lights should be part of the "Light" group, otherwise they wont be taken into account, *vertex_renderer.gd* should intercept new nodes and add them to the Light group,
- when the you run your project *vertex_renderer.gd* will scan for all nodes inside the scene and add them to the group, however this only happens when *update_nodes_group* is called
- refer to [Changing Scenes](https://github.com/NonNavi/Vertex-Render-For-Godot-4?tab=readme-ov-file#changing-scenes) for more information on that.
+ Lights should be part of the "Light" group, otherwise they wont be taken into account, *vertex_renderer.gd* should intercept new nodes and add them to the Light group and update the lightmap everyframe,
+ this only happens automatically if VertexRenderer.real_time is true ( is true by default. ), otherwise VertexRenderer.update_shader() should be called to update the lightmap.
+
  - ### New lights are not updating
- The shader include has a **MAX_LIGHT** constant, this can be changed if necessary
+ The shader include has a **MAX_LIGHT** constant, this can be changed if necessary.
+
  - ### Negative attenuation makes everything else black
 This is an issue in the vertex_render.gd script, values are not capped, I recommend not going below zero for OmniLights
+
  - ### Big pixels surrounding my light sources
-This issue is caused by the light function, since we're changing the way the light behaves without telling the engine, graphical errors like this are common, you can mitigate this by 
-checking the shader of the material that presents this error and revise the light function, this is very apparent with low poly models and big light sources with high attenuation values.
+This issue is caused by shaders that override DIFFUSE_LIGHT/SPECULAR_LIGHT in the light function of the shader, since we're changing the way the light behaves without telling the engine, graphical errors like this are common, you can mitigate this by 
+checking the shader of the material that presents this error and revise the light function, this is very apparent with low poly models and big light sources.
 Make sure it's behaviour lines up with what was discussed at [Custom Code](https://github.com/NonNavi/Vertex-Render-For-Godot-4?tab=readme-ov-file#custom-code)
+
  - ### Weird lighting on imported scene/model
 Make sure the origins of the objects are correct and are close to the mesh, this applies with rotation and scale as well.
 
-## Recommendations for your Project
+## Side Note
 - If you're not planning in using effects like SSAO or SSIL, I suggest adding **render_mode unshaded**, this however will make Ambient light behave differently.
-- I recommend adding the Light's to the Light group manually, make it so is a Global Group and adding the nodes to the group is easier.
 
