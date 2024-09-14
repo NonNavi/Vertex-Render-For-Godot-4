@@ -45,7 +45,7 @@ If you feel like the Sky light is too dim, I recommend changing *Color* in *Ambi
 ## Custom Code.
 - ### Basic Code
 Before we can start to make our own shaders we need to cover the basics of the shader, sample shaders are provided, 
-this will serve more as documentation and somewhere to come back to know how to make the shader work.
+this will serve more as documentation and somewhere to come back, to know how to make the shader work.
 ```GLSL
 shader_type spatial;
 //We can add this before or after we include the vertex shader.
@@ -64,7 +64,7 @@ void fragment(){
 ```
 - ### Built-in Pixel Shading compatibility
 I recommend sticking to using unshaded shaders, as they're the most stable, however in case you need the shader to use more complicated graphical effects like, SSAO,
-SSIL, SDFGI, SSR, ReflectionProbes, Hemishperic Ambient Light and such, you'll need to change your code a bit to accomodate for that.
+SSIL, ReflectionProbes, etc. and such, you'll need to change your code a bit to accomodate for that.
 ```GLSL
 shader_type spatial;
 
@@ -75,14 +75,14 @@ void fragment(){
 	// Your code here...
    }
 // We override the light function to give it our own lighting information
-// this can caused blocky light sources if done incorrectly or if the light attenuation and range are too high. 
+// this can caused blocky outline outside the light range if done incorrectly or the mesh poly count is low.. 
 void light(){
 	DIFFUSE_LIGHT = shader_result;
 }
 ```
 - ### Vertex Code
 *vertex_shader.gdshaderinc* uses the vertex pass function for all the shading, so custom code is impossible without a special definition, ***#define CUSTOM_CODE*** will tell the shader include
-to change the way it works, this can be forced if your prefer it but changes to your shader code need to be made for the Vertex Renderer to work.
+to change the way it works, this can be forced if your prefer it but changes to your shader code need to be made.
 ```GLSL
 shader_type spatial;
 
