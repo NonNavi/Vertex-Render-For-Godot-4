@@ -81,7 +81,8 @@ shader_type spatial;
 void fragment(){
 	// Your code here...
    }
-// We override the light function to give it our own light information, this can caused blocky light sources if done incorrectly. 
+// We override the light function to give it our own lighting information
+// this can caused blocky light sources if done incorrectly or if the light attenuation and range are too high. 
 void light(){
 	DIFFUSE_LIGHT = shader_result;
 }
@@ -108,27 +109,6 @@ void vertex(){
 	shader_result= shader.result;
    }
 ```
-We need to pass the MODEL_MATRIX so the Vertex position and Normal are translated from local space to world space, I'll explain how to make shaders that use the render flag *world_vertex_coords* next.
-```GLSL
-shader_type spatial;
-
-#define CUSTOM_VERTEX
-#define WORLD_SPACE_COORDINATES
-
-render_mode world_vertex_coords,unshaded;
-#include "vertex_shader.gdshaderinc"
-
-void vertex(){
-	ShaderResult shade;
-	// We still need to pass a value for the 3rd argumentm however it wont be used so you can pass any value here it wont matter.
-	shade = vertex_shade(VERTEX,NORMAL,MODEL_MATRIX);
-	shader_result = shade.result;
-
-	// for this example I made the shader round it's position to the nearest 4 decimal number, I need the *world_space_coords* render flag so it stay on the grid
-	// Round vertex position with 4 decimals
-	VERTEX = floor(VERTEX) + round(fract(VERTEX) * 4.0) * 0.25;
-}
-```
 This are the *BASICS* for your code to have the result of the Shader, the important part is the *ShaderResult* struct and the *vertex_shade* function, the *ShaderResult* is a struct
 so it stores more data than the result of the shading process.
 ```GLSL
@@ -139,33 +119,59 @@ struct ShaderResult{
 };
 ```
 ShaderResult stores 3 values, in case you need the Brightness or Color for your code, This values can be retrieved normally with "final_color" and "final_brightness".
+vertex_shade needs, VERTEX for position, NORMAL for orientation and MODEL_MATRIX for transformation, the shader is made to take into account local space vertex coordinates, and as such we need the
+MODEL_MATRIX to transform the local space postion and orientation to world space.
+
+- ### World Vertex Coords
+In the case that you need to make a shader that requires the render flag **world_vertex_coords** use the definition **WORLD_SPACE_COORDINATES** and add the render flag **world_vertex_coords**,
+no more custom code is needed on top of the basics already discussed, **WORLD_SPACE_COORDINATES** will tell the include to skip the transformation process entirely, this is an example of a shader that uses said definition.
+```GLSL
+shader_type spatial;
+
+#define CUSTOM_VERTEX // Not necessary, used here just for demostration.
+#define WORLD_SPACE_COORDINATES // Changes how Light sources are calculated to ignore matrix transformations.
+
+// we need to add "world_vertex_coords" otherwise the lighting will mismatch.
+render_mode world_vertex_coords,unshaded;
+#include "vertex_shader.gdshaderinc"
+
+void vertex(){
+	ShaderResult shade;
+	// We still need to pass a value for the 3rd argumentm however it wont be used so you can pass any value here it wont matter.
+	shade = vertex_shade(VERTEX,NORMAL,MODEL_MATRIX);
+	shader_result = shade.result;
+
+	// Your code...
+}
+```
+If you need a more practical use of the world_vertex_coords render flag check the sample shader *lit_vertex.gdshader* inside the "shader" folder.
 
  ## Known Issues
  - ### Everything is black/unshaded at runtime
  Check your Debugger log, and check for any shader global related errors or warnings, if that is the case, reload your project.<br>
  If your error is not related to missing shder globals, consider reporting it [here](https://github.com/NonNavi/Vertex-Render-For-Godot-4/issues).
+ - ### My scene looks too bright.
+ When you make a new scene the engine will create a DirectionalLight3D with it, you can get rid of this node by adding a DirectionalLight3D yourself and then removing it or simply hidding it.
+ 
+ Keep in mind that if your scene has no light sources and you come from a scene that does, the lighting information will be carried over the new scene, in theory the singleton should
+ take care of updating the lightmap when a new scene loads ( note: this only happens automatically inside the editor, check [Changing Scene](https://github.com/NonNavi/Vertex-Render-For-Godot-4?tab=readme-ov-file#changing-scenes) ),
+ you can force the update by adding a Light3D node to the scene.
  - ### All lights are missing at runtime
  Lights should be part of the "Light" group, otherwise they wont be taken into account, *vertex_renderer.gd* should intercept new nodes and add them to the Light group,
  when the you run your project *vertex_renderer.gd* will scan for all nodes inside the scene and add them to the group, however this only happens when *update_nodes_group* is called
  refer to [Changing Scenes](https://github.com/NonNavi/Vertex-Render-For-Godot-4?tab=readme-ov-file#changing-scenes) for more information on that.
- 
  - ### New lights are not updating
-
  The shader include has a **MAX_LIGHT** constant, this can be changed if necessary
  - ### Negative attenuation makes everything else black
-
 This is an issue in the vertex_render.gd script, values are not capped, I recommend not going below zero for OmniLights
  - ### Big pixels surrounding my light sources
 This issue is caused by the light function, since we're changing the way the light behaves without telling the engine, graphical errors like this are common, you can mitigate this by 
-checking the shader of the material that presents this error and revise the light function, 
-make sure it's behaviour lines up with what was discussed at [Custom Code](https://github.com/NonNavi/Vertex-Render-For-Godot-4?tab=readme-ov-file#custom-code)
-
+checking the shader of the material that presents this error and revise the light function, this is very apparent with low poly models and big light sources with high attenuation values.
+Make sure it's behaviour lines up with what was discussed at [Custom Code](https://github.com/NonNavi/Vertex-Render-For-Godot-4?tab=readme-ov-file#custom-code)
  - ### Weird lighting on imported scene/model
-
 Make sure the origins of the objects are correct and are close to the mesh, this applies with rotation and scale as well.
 
 ## Recommendations for your Project
-
 - If you're not planning in using effects like SSAO or SSIL, I suggest adding **render_mode unshaded**, this however will make Ambient light behave differently.
 - I recommend adding the Light's to the Light group manually, make it so is a Global Group and adding the nodes to the group is easier.
 
