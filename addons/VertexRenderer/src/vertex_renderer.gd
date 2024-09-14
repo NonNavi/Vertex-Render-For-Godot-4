@@ -50,11 +50,11 @@ func update_nodes_group():
 	var nodes = get_children(true)
 	for node in nodes:
 		if node is Light3D:
-			node.add_to_group("Light")
+			node.add_to_group("Light",true)
 func _on_node_added(node : Node):
 	if not(node is Light3D):
 		return
-	node.add_to_group("Light")
+	node.add_to_group("Light",true)
 
 ##Updates the shader globals values for the shader
 func update_shader():
