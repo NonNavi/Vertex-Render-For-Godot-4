@@ -1,5 +1,5 @@
-# Vertex-Render for Godot 4
- Vertex rendering reimplemented for Godot 4
+# Vertex-Render for Godot 4.x
+ Vertex rendering reimplemented for Godot 4.x,  Godot 4.4 fixed Vertex Rendering making this addon unnecessary for Godot 4.4 onwards, however the addon allows for extra usability;
 
 ## DISCLAIMER
  This addon is a work in progress and changes to the shader include may occur in the future, I recommend using shaders with the render flag "unshaded" as they're the most consistent, and
